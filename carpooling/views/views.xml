@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="carpooling.list">
+      <field name="name">carpooling list</field>
+      <field name="model">carpooling.carpooling</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="carpooling.action_window">
+      <field name="name">carpooling window</field>
+      <field name="res_model">carpooling.carpooling</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="carpooling.action_server">
+      <field name="name">carpooling server</field>
+      <field name="model_id" ref="model_carpooling_carpooling"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="carpooling" id="carpooling.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="carpooling.menu_1" parent="carpooling.menu_root"/>
+    <menuitem name="Menu 2" id="carpooling.menu_2" parent="carpooling.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="carpooling.menu_1_list" parent="carpooling.menu_1"
+              action="carpooling.action_window"/>
+    <menuitem name="Server to list" id="carpooling" parent="carpooling.menu_2"
+              action="carpooling.action_server"/>
+-->
+  </data>
+</odoo>
