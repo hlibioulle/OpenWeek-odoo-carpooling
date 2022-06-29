@@ -20,6 +20,20 @@ class VehicleTrip(models.Model):
 
     passengers = fields.Many2many(comodel_name="res.users", string="Passenger")
 
+    def do_something(self):
+        for record in self:
+            record.write({'passengers': [fields.Command.link(self.env.uid)] })  
+        return True
+    
+    # @api.onchange('passengers')
+    # def _on_passengers_change(self):
+    #     return {
+    #         'warning': {
+    #             'title': "You should NOT do that",
+    #             'message': "The passengers list is NOT editable",
+    #         }
+    #     }
+
     @api.depends("available_seats", "passengers")
     def _remaining_seats(self):
         for record in self:

@@ -6,7 +6,8 @@
       <field name="name">carpooling available trips</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <tree create="false">
+        <tree>
+         <!-- create="false"> -->
           <field name="driver"/>
           <field name="vehicle_type"/>
           <field name="departure_time"/>
@@ -14,7 +15,7 @@
           <field name="destination_loc"/>
           <field name="remaining_seats"/>
           <field name="description"/>
-          <button name="book" string="Book" class="oe_highlight"/>
+          <button name="do_something" type="object" string="Book trip" class="oe_highlight"/>
         </tree>
       </field>
     </record>
@@ -23,7 +24,8 @@
       <field name="name">carpooling form</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <form string="Trip info" edit="false">
+        <form string="Trip info">
+         <!-- edit="false"> -->
           <group colspan="4">
               <group colspan="2" col="2">
                   <separator string="Required fields" colspan="2"/>
@@ -38,6 +40,11 @@
                   <field name="description"/>
 
                   <notebook colspan="4">
+                    <page string="Passengers (TO REMOVE)">
+                        <tree>
+                          <field name="passengers"/>
+                        </tree>
+                    </page>
                     <page string="Vehicle pictures">
                         <field name="description"/>
                     </page>
@@ -69,8 +76,8 @@
 
     <!-- Your trips -->
 
-    <record model="ir.ui.view" id="carpooling.available_trips">
-      <field name="name">carpooling available trips</field>
+    <!-- <record model="ir.ui.view" id="carpooling.your_trips">
+      <field name="name">carpooling your trips</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
         <tree>
@@ -123,7 +130,7 @@
           </group>
         </form>
       </field>
-    </record>
+    </record> -->
 
     <!-- actions opening views on models -->
 
