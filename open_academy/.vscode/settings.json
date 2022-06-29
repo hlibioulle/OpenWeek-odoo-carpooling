@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "/Users/hadrien/Git/odoo",
+        "/Users/hadrien/Git/odoo/odoo"
+    ]
+}

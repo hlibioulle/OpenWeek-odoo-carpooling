@@ -1,2 +1,6 @@
 
 *.pyc
+
+open_academy/.pylintrc
+
+carpooling/.vscode/
