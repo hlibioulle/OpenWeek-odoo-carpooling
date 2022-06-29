@@ -1,60 +1,162 @@
 <odoo>
   <data>
-    <!-- explicit list view definition -->
+    <!-- Available trips -->
 
-    <record model="ir.ui.view" id="carpooling.list">
-      <field name="name">carpooling list</field>
-      <field name="model">carpooling.carpooling</field>
+    <record model="ir.ui.view" id="carpooling.available_trips">
+      <field name="name">carpooling available trips</field>
+      <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <tree>
-          <field name="name"/>
-          <field name="value"/>
-          <field name="value2"/>
+        <tree create="false">
+          <field name="driver"/>
+          <field name="vehicle_type"/>
+          <field name="departure_time"/>
+          <field name="departure_loc"/>
+          <field name="destination_loc"/>
+          <field name="remaining_seats"/>
+          <field name="description"/>
+          <button name="book" string="Book" class="oe_highlight"/>
         </tree>
       </field>
     </record>
 
+    <record model="ir.ui.view" id="carpooling.trip_form">
+      <field name="name">carpooling form</field>
+      <field name="model">carpooling.vehicle_trip</field>
+      <field name="arch" type="xml">
+        <form string="Trip info" edit="false">
+          <group colspan="4">
+              <group colspan="2" col="2">
+                  <separator string="Required fields" colspan="2"/>
+                  <field name="driver" readonly="1"/>
+                  <field name="departure_time" required="1"/>
+                  <field name="departure_loc" required="1"/>
+                  <field name="destination_loc" required="1"/>
+                  <field name="available_seats" required="1"/>
+              
+                  <separator string="Optional" colspan="2"/>
+                  <field name="vehicle_type"/>
+                  <field name="description"/>
+
+                  <notebook colspan="4">
+                    <page string="Vehicle pictures">
+                        <field name="description"/>
+                    </page>
+                    <page string="Location pictures">
+                        <field name="description"/>
+                    </page>
+                    <page string="Map">
+                        <field name="description"/>
+                    </page>
+                  </notebook>
+              </group>
+          </group>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="carpooling.trip_search">
+      <field name="name">carpooling trip search</field>
+      <field name="model">carpooling.vehicle_trip</field>
+      <field name="arch" type="xml">
+        <search>
+          <field name="departure_time"/>
+          <field name="departure_loc"/>
+          <field name="destination_loc"/>
+          <field name="remaining_seats"/>
+        </search>
+      </field>
+    </record>
+
+    <!-- Your trips -->
+
+    <record model="ir.ui.view" id="carpooling.available_trips">
+      <field name="name">carpooling available trips</field>
+      <field name="model">carpooling.vehicle_trip</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="driver" readonly="1"/>
+          <field name="vehicle_type"/>
+          <field name="departure_time"/>
+          <field name="departure_loc"/>
+          <field name="destination_loc"/>
+          <field name="remaining_seats"/>
+          <field name="description"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="carpooling.trip_form">
+      <field name="name">carpooling form</field>
+      <field name="model">carpooling.vehicle_trip</field>
+      <field name="arch" type="xml">
+        <form string="Trip form">
+          <group colspan="4">
+              <group colspan="2" col="2">
+                  <separator string="Required fields" colspan="2"/>
+                  <field name="driver" readonly="1"/>
+                  <field name="departure_time" required="1"/>
+                  <field name="departure_loc" required="1"/>
+                  <field name="destination_loc" required="1"/>
+                  <field name="available_seats" required="1"/>
+              
+                  <separator string="Optional" colspan="2"/>
+                  <field name="vehicle_type"/>
+                  <field name="description"/>
+
+                  <notebook colspan="4">
+                    <page string="Passengers">
+                        <tree>
+                          <field name="passengers"/>
+                        </tree>
+                    </page>
+                    <page string="Vehicle pictures">
+                        <field name="description"/>
+                    </page>
+                    <page string="Location pictures">
+                        <field name="description"/>
+                    </page>
+                    <page string="Map">
+                        <field name="description"/>
+                    </page>
+                  </notebook>
+              </group>
+          </group>
+        </form>
+      </field>
+    </record>
 
     <!-- actions opening views on models -->
 
-    <record model="ir.actions.act_window" id="carpooling.action_window">
-      <field name="name">carpooling window</field>
-      <field name="res_model">carpooling.carpooling</field>
+    <record model="ir.actions.act_window" id="carpooling.show_available_trips">
+      <field name="name">Available trips</field>
+      <field name="res_model">carpooling.vehicle_trip</field>
       <field name="view_mode">tree,form</field>
     </record>
 
 
     <!-- server action to the one above -->
 
-    <record model="ir.actions.server" id="carpooling.action_server">
-      <field name="name">carpooling server</field>
-      <field name="model_id" ref="model_carpooling_carpooling"/>
-      <field name="state">code</field>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "tree,form",
-          "res_model": model._name,
-        }
-      </field>
+    <record model="ir.actions.act_window" id="carpooling.show_your_trips">
+      <field name="name">Your trips</field>
+      <field name="res_model">carpooling.vehicle_trip</field>
+      <field name="view_mode">tree,form</field>
     </record>
 
 
     <!-- Top menu item -->
 
-    <menuitem name="carpooling" id="carpooling.menu_root"/>
+    <menuitem name="Carpooling" id="carpooling.menu_root"/>
 
     <!-- menu categories -->
 
-    <menuitem name="Menu 1" id="carpooling.menu_1" parent="carpooling.menu_root"/>
-    <menuitem name="Menu 2" id="carpooling.menu_2" parent="carpooling.menu_root"/>
+    <menuitem name="Trips" id="carpooling.menu_1" parent="carpooling.menu_root"/>
 
     <!-- actions -->
 
-    <menuitem name="List" id="carpooling.menu_1_list" parent="carpooling.menu_1"
-              action="carpooling.action_window"/>
-    <menuitem name="Server to list" id="carpooling" parent="carpooling.menu_2"
-              action="carpooling.action_server"/>
+    <menuitem name="Available trips" id="carpooling.menu_1_available_trips" parent="carpooling.menu_1"
+              action="carpooling.show_available_trips"/>
+    <menuitem name="Your trips" id="carpooling.menu_1_your_trips" parent="carpooling.menu_1"
+              action="carpooling.show_your_trips"/>
 
   </data>
 </odoo>

@@ -91,7 +91,7 @@
         <form string="Session form">
           <group colspan="4">
               <group colspan="2" col="2">
-                  <separator string="Required" colspan="2"/>
+                  <separator string="Required fields" colspan="2"/>
                   <field name="name" required="1"/>
                   <field name="start_date" required="1"/>
                   <field name="instructor" required="1"/>
@@ -100,11 +100,58 @@
                   <separator string="Optional" colspan="2"/>
                   <field name="duration"/>
                   <field name="number_of_seats"/>
+
+                  <notebook colspan="4">
+                    <page string="Optional fields">
+                        <field name="duration"/>
+                        <field name="number_of_seats"/>
+                    </page>
+                    <page string="Attendees">
+                        <field name="attendees" nolabel="1">
+                          <tree>
+                            <field name="name"/>
+                          </tree>
+                        </field>
+                    </page>
+                  </notebook>
               </group>
           </group>
         </form>
       </field>
     </record>
+
+    <record model="ir.ui.view" id="open_academy.new_view">
+      <field name="name">Open Academy new view</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='vat']" position="after">
+          <field name="is_instructor"/>
+          <field name="sessions" string="Attended or attending sessions">
+            <tree>
+              <field name="name"/>
+            </tree>
+          </field>
+        </xpath>
+      </field>
+    </record>
+
+    <!-- <record id="open_academy.partner.sessions_list" model="ir.ui.view">
+        <field name="name">Open Academy partner sessions list</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="res.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath name="name" position="after">
+              <field name="instructor"/>
+              <field name="sessions" string="Attended or attending sessions">
+                <tree>
+                  <field name="name"/>
+                </tree>
+              </field>
+            </xpath>
+            <field name="name"/>
+        </field>
+    </record> -->
 
     <!-- actions opening views on models -->
 
