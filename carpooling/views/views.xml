@@ -15,7 +15,12 @@
           <field name="destination_loc"/>
           <field name="remaining_seats"/>
           <field name="description"/>
-          <button name="book_or_cancel" type="object" string="Book trip" class="oe_highlight"/>
+          <!-- <button name="book_or_cancel" type="object" class="oe_highlight">
+            <field readonly="1" name="button_txt" options='{"no_open": True}'/>
+          </button> -->
+          <field name="current_user_is_passenger" invisible="1"/>
+          <button name='book_or_cancel' string='Book trip' type="object"  attrs="{'invisible':[('current_user_is_passenger', '=', True)]}" class="oe_highlight"/>
+          <button name='book_or_cancel' string='Cancel booking' type="object"  attrs="{'invisible':[('current_user_is_passenger', '=', False)]}" class="btn-danger"/>
         </tree>
       </field>
     </record>
@@ -76,6 +81,9 @@
           <field name="departure_loc"/>
           <field name="destination_loc"/>
           <field name="remaining_seats"/>
+          <field name="passengers"/>
+          <!-- <field name="current_user_is_passenger"/> -->
+          <!-- <field name="current_user_is_passenger" string="Is current user a passenger?" filter_domain="[(current_user_is_passenger,'=', True)]"/> -->
         </search>
       </field>
     </record>
@@ -167,6 +175,16 @@
       <field name="domain">[('driver_uid', '!=', uid)]</field>
     </record>
 
+    <record model="ir.actions.act_window" id="carpooling.show_booked_trips">
+      <field name="name">Booked trips</field>
+      <field name="res_model">carpooling.vehicle_trip</field>
+      <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('carpooling.available_trips')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('carpooling.available_trip_form')})]"
+      />
+      <field name="domain">[('passengers', '=', uid)]</field>
+    </record>
+
     <record model="ir.actions.act_window" id="carpooling.show_your_trips">
       <field name="name">Your trips</field>
       <field name="res_model">carpooling.vehicle_trip</field>
@@ -179,6 +197,7 @@
       <!-- <field name="view_mode">tree,form</field> -->
       <field name="domain">[('driver_uid', '=', uid)]</field>
     </record>
+
 
     <!-- <record id="zehjbvizcvbzevboz" model="ir.rule">
       <field name="name">Show</field>
@@ -213,6 +232,8 @@
 
     <menuitem name="Available trips" id="carpooling.menu_1_available_trips" parent="carpooling.menu_root"
               action="carpooling.show_available_trips"/>
+    <menuitem name="Booked trips" id="carpooling.menu_1_booked_trips" parent="carpooling.menu_root"
+              action="carpooling.show_booked_trips"/>
     <menuitem name="Your trips" id="carpooling.menu_1_your_trips" parent="carpooling.menu_root"
               action="carpooling.show_your_trips"/>
 

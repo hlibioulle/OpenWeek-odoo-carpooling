@@ -40,13 +40,29 @@ class VehicleTrip(models.Model):
     
     description = fields.Text()
 
-    passengers = fields.Many2many(comodel_name="res.users", string="Passenger")
+    passengers = fields.Many2many(comodel_name="res.users", string="Passengers")
 
     @api.constrains('passengers')
     def _check_number_of_passengers(self):
         for record in self:
             if len(record.passengers) > record.available_seats:
                 raise ValidationError(f"Too many passengers ({len(record.passengers)} > {record.available_seats})")
+
+    # button_txt = fields.Char(compute="_compute_btn_txt")
+
+    # @api.depends("passengers")
+    # def _compute_btn_txt(self):
+    #     for record in self:
+    #         if self.env.user in record.passengers:
+    #             record.button_txt = "Cancel booking"
+    #         else:
+    #             record.button_txt = "Book trip"
+
+    current_user_is_passenger = fields.Boolean(compute="_compute_current_user_is_passenger")
+    @api.depends("passengers")
+    def _compute_current_user_is_passenger(self):
+        for record in self:
+            record.current_user_is_passenger = (self.env.user in record.passengers)
 
     def book_or_cancel(self):
         for record in self:
