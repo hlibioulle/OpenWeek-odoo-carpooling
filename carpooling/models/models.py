@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
 
+from email.policy import default
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 class VehicleTrip(models.Model):
     _name = "carpooling.vehicle_trip"
     _description = "carpooling.vehicle_trip.description"
 
     driver = fields.Many2one("res.users", "Driver", required=True, default=lambda self: self.env.user)
+    is_current_user = fields.Boolean(compute="_is_current_user_driver")
+
+    @api.depends('driver')
+    def _is_current_user_driver(self):
+        for record in self:
+            record.is_current_user = (record.driver == self.env.user)
+
     vehicle_type = fields.Char()
 
     departure_loc = fields.Char(required=True)
@@ -20,8 +29,16 @@ class VehicleTrip(models.Model):
 
     passengers = fields.Many2many(comodel_name="res.users", string="Passenger")
 
+    @api.constrains('passengers')
+    def _check_number_of_passengers(self):
+        for record in self:
+            if len(record.passengers) > record.available_seats:
+                raise ValidationError(f"Too many passengers ({len(record.passengers)} > {record.available_seats})")
+
     def do_something(self):
         for record in self:
+            if record.remaining_seats <= 0:
+                continue
             record.write({'passengers': [fields.Command.link(self.env.uid)] })  
         return True
     
