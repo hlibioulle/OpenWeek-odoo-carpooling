@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
@@ -34,9 +35,17 @@ class VehicleTrip(models.Model):
     departure_loc = fields.Char(string="Departure location", required=True)
     destination_loc = fields.Char(string="Destination location", required=True)
     departure_time = fields.Datetime(string="Departure time", required=True)
+    expired = fields.Boolean(compute="_compute_expired", store=True)
+    @api.depends("departure_time")
+    def _compute_expired(self):
+        for record in self:
+            now = datetime.now()
+            record.expired = record.departure_time < now
+                
 
     available_seats = fields.Integer(required=True, string="Available seats")
-    remaining_seats = fields.Integer(compute='_remaining_seats', string="Remaining seats")
+    remaining_seats = fields.Char(compute='_remaining_seats', string="Remaining seats")
+    remaining_seats_int = fields.Integer(compute='_remaining_seats_int', string="Remaining seats")
     
     description = fields.Text()
 
@@ -46,7 +55,7 @@ class VehicleTrip(models.Model):
     def _check_number_of_passengers(self):
         for record in self:
             if len(record.passengers) > record.available_seats:
-                raise ValidationError(f"Too many passengers ({len(record.passengers)} > {record.available_seats})")
+                raise ValidationError(f"Too many passengers ({len(record.passengers)} > {record.remaining_seats_int})")
 
     # button_txt = fields.Char(compute="_compute_btn_txt")
 
@@ -69,7 +78,7 @@ class VehicleTrip(models.Model):
             if self.env.user in record.passengers:
                 record.write({'passengers': [fields.Command.unlink(self.env.uid)] })  
             else:
-                if record.remaining_seats <= 0:
+                if record.remaining_seats_int <= 0:
                     continue
                 record.write({'passengers': [fields.Command.link(self.env.uid)] })  
         return True
@@ -86,7 +95,12 @@ class VehicleTrip(models.Model):
     @api.depends("available_seats", "passengers")
     def _remaining_seats(self):
         for record in self:
-            record.remaining_seats = record.available_seats - len(record.passengers)
+            record.remaining_seats = str(record.available_seats - len(record.passengers)) + " out of " + str(record.available_seats)
+
+    @api.depends("available_seats", "passengers")
+    def _remaining_seats_int(self):
+        for record in self:
+            record.remaining_seats_int = record.available_seats - len(record.passengers)
 
 class Passenger(models.Model):
     _name = "res.users"

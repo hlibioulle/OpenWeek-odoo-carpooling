@@ -6,21 +6,23 @@
       <field name="name">carpooling available trips</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <tree create="false" export_xlsx="false">
+        <tree create="false" export_xlsx="false" delete="false" default_order='departure_time' decoration-warning="(expired == True)" decoration-muted="(expired == False) and (remaining_seats_int &lt;= 0)" decoration-success="(expired == False) and (remaining_seats_int &gt; 0)">
           <field name="driver"/>
           <!-- <field name="is_current_user"/> -->
           <field name="vehicle_type"/>
           <field name="departure_time"/>
+          <field name="expired" invisible="1"/>
           <field name="departure_loc"/>
           <field name="destination_loc"/>
           <field name="remaining_seats"/>
+          <field name="remaining_seats_int" invisible="1"/>
           <field name="description"/>
           <!-- <button name="book_or_cancel" type="object" class="oe_highlight">
             <field readonly="1" name="button_txt" options='{"no_open": True}'/>
           </button> -->
           <field name="current_user_is_passenger" invisible="1"/>
-          <button name='book_or_cancel' string='Book trip' type="object"  attrs="{'invisible':[('current_user_is_passenger', '=', True)]}" class="oe_highlight"/>
-          <button name='book_or_cancel' string='Cancel booking' type="object"  attrs="{'invisible':[('current_user_is_passenger', '=', False)]}" class="btn-danger"/>
+          <button name='book_or_cancel' string='Book trip' type="object"  attrs="{'invisible':['|', '|', ('current_user_is_passenger', '=', True), ('remaining_seats_int', '&lt;=', 0), ('expired', '=', True)]}" class="oe_highlight"/>
+          <button name='book_or_cancel' string='Cancel booking' type="object"  attrs="{'invisible':['|', ('current_user_is_passenger', '=', False), ('expired', '=', True)]}" class="btn-danger"/>
         </tree>
       </field>
     </record>
@@ -94,15 +96,17 @@
       <field name="name">carpooling your trips</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <tree export_xlsx="false">
+        <tree export_xlsx="false" default_order='departure_time' decoration-warning="(expired == True)" decoration-muted="(expired == False) and (remaining_seats_int &lt;= 0)" decoration-success="(expired == False) and (remaining_seats_int &gt; 0)">
           <field name="driver" readonly="1"/>
           <!-- <field name="driver_uid"/>
           <field name="is_current_user"/> -->
           <field name="vehicle_type"/>
           <field name="departure_time"/>
+          <field name="expired" invisible="1"/>
           <field name="departure_loc"/>
           <field name="destination_loc"/>
           <field name="remaining_seats"/>
+          <field name="remaining_seats_int" invisible="1"/>
           <field name="description"/>
         </tree>
       </field>
@@ -127,8 +131,7 @@
           <group colspan="4">
               <group colspan="2" col="2">
                   <separator string="Required fields" colspan="2"/>
-                  <field name="driver"/>
-                   <!-- readonly="1"/> -->
+                  <field name="driver" readonly="1"/>
                   <field name="departure_time" required="1"/>
                   <field name="departure_loc" required="1"/>
                   <field name="destination_loc" required="1"/>
@@ -165,15 +168,24 @@
     <record model="ir.actions.act_window" id="carpooling.show_available_trips">
       <field name="name">Available trips</field>
       <field name="res_model">carpooling.vehicle_trip</field>
-      <!-- <field name="view_id" ref="carpooling.available_trips"/> -->
-      <!-- <field name="views">[("carpooling.available_trips", "tree"), ("carpooling.available_trip_form", "form")]</field> -->
       <field name="view_ids" eval="[(5, 0, 0),
         (0, 0, {'view_mode': 'tree', 'view_id': ref('carpooling.available_trips')}),
         (0, 0, {'view_mode': 'form', 'view_id': ref('carpooling.available_trip_form')})]"
       />
-      <!-- <field name="view_mode">tree,form</field> -->
-      <field name="domain">[('driver_uid', '!=', uid)]</field>
+      <field name="domain">['&amp;', ('driver_uid', '!=', uid), ('expired', '=', False)]</field>
     </record>
+
+    <record model="ir.actions.act_window" id="carpooling.show_others_expired_trips">
+      <field name="name">Others expired trips</field>
+      <field name="res_model">carpooling.vehicle_trip</field>
+      <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('carpooling.available_trips')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('carpooling.available_trip_form')})]"
+      />
+      <field name="domain">['&amp;', ('driver_uid', '!=', uid), ('expired', '=', True)]</field>
+    </record>
+
+
 
     <record model="ir.actions.act_window" id="carpooling.show_booked_trips">
       <field name="name">Booked trips</field>
@@ -182,43 +194,40 @@
         (0, 0, {'view_mode': 'tree', 'view_id': ref('carpooling.available_trips')}),
         (0, 0, {'view_mode': 'form', 'view_id': ref('carpooling.available_trip_form')})]"
       />
-      <field name="domain">[('passengers', '=', uid)]</field>
+      <field name="domain">['&amp;', ('passengers', '=', uid), ('expired', '=', False)]</field>
     </record>
+
+    <record model="ir.actions.act_window" id="carpooling.show_booked_expired_trips">
+      <field name="name">Booked &amp; expired trips</field>
+      <field name="res_model">carpooling.vehicle_trip</field>
+      <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('carpooling.available_trips')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('carpooling.available_trip_form')})]"
+      />
+      <field name="domain">['&amp;', ('passengers', '=', uid), ('expired', '=', True)]</field>
+    </record>
+
+
 
     <record model="ir.actions.act_window" id="carpooling.show_your_trips">
       <field name="name">Your trips</field>
       <field name="res_model">carpooling.vehicle_trip</field>
-      <!-- <field name="view_id" ref="carpooling.your_trips"/> -->
-      <!-- <field name="views">[("carpooling.your_trips", "tree"), ("carpooling.your_trip_form", "form")]</field> -->
       <field name="view_ids" eval="[(5, 0, 0),
         (0, 0, {'view_mode': 'tree', 'view_id': ref('carpooling.your_trips')}),
         (0, 0, {'view_mode': 'form', 'view_id': ref('carpooling.your_trip_form')})]"
       />
-      <!-- <field name="view_mode">tree,form</field> -->
-      <field name="domain">[('driver_uid', '=', uid)]</field>
+      <field name="domain">['&amp;', ('driver_uid', '=', uid), ('expired', '=', False)]</field>
     </record>
 
-
-    <!-- <record id="zehjbvizcvbzevboz" model="ir.rule">
-      <field name="name">Show</field>
-      <field name="model_id" ref="model_carpooling_vehicle_trip" />
-      <field name="perm_read" eval="0" />
-      <field name="perm_write" eval="0" />
-      <field name="perm_create" eval="0" />
-      <field name="perm_unlink" eval="0" />
-      <field name="domain_force">[('driver', '=', user)]</field>
-    </record> -->
-
-    <!-- <record id="hide" model="ir.rule">
-      <field name="name">Hide</field>
-      <field name="model_id" ref="model_carpooling_vehicle_trip" />
-      <field name="groups" eval="[(4, ref('base.group_user'))]" />
-      <field name="perm_read" eval="0" />
-      <field name="perm_write" eval="0" />
-      <field name="perm_create" eval="0" />
-      <field name="perm_unlink" eval="0" />
-      <field name="domain_force">[('driver', '!=', user)]</field>
-    </record> -->
+    <record model="ir.actions.act_window" id="carpooling.show_your_expired_trips">
+      <field name="name">Your expired trips</field>
+      <field name="res_model">carpooling.vehicle_trip</field>
+      <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('carpooling.your_trips')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('carpooling.your_trip_form')})]"
+      />
+      <field name="domain">['&amp;', ('driver_uid', '=', uid), ('expired', '=', True)]</field>
+    </record>
 
     <!-- Top menu item -->
 
@@ -230,12 +239,20 @@
 
     <!-- actions -->
 
-    <menuitem name="Available trips" id="carpooling.menu_1_available_trips" parent="carpooling.menu_root"
+    <menuitem name="Available trips" id="carpooling.menu_available_trips" parent="carpooling.menu_root"
               action="carpooling.show_available_trips"/>
-    <menuitem name="Booked trips" id="carpooling.menu_1_booked_trips" parent="carpooling.menu_root"
+    <menuitem name="Booked trips" id="carpooling.menu_booked_trips" parent="carpooling.menu_root"
               action="carpooling.show_booked_trips"/>
-    <menuitem name="Your trips" id="carpooling.menu_1_your_trips" parent="carpooling.menu_root"
+    <menuitem name="Your trips" id="carpooling.menu_your_trips" parent="carpooling.menu_root"
               action="carpooling.show_your_trips"/>
+    <menuitem name="Expired trips" id="carpooling.menu_expired_trips" parent="carpooling.menu_root"/>
+
+    <menuitem name="Your expired trips" id="carpooling.menu_your_expired_trips" parent="carpooling.menu_expired_trips"
+              action="carpooling.show_your_expired_trips"/>
+    <menuitem name="Booked &amp; expired trips" id="carpooling.menu_booked_expired_trips" parent="carpooling.menu_expired_trips"
+              action="carpooling.show_booked_expired_trips"/>
+    <menuitem name="Others expired trips" id="carpooling.menu_others_expired_trips" parent="carpooling.menu_expired_trips"
+              action="carpooling.show_others_expired_trips"/>             
 
   </data>
 </odoo>
