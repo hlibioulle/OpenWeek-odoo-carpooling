@@ -239,19 +239,25 @@
 
     <!-- actions -->
 
-    <menuitem name="Available trips" id="carpooling.menu_available_trips" parent="carpooling.menu_root"
-              action="carpooling.show_available_trips"/>
-    <menuitem name="Booked trips" id="carpooling.menu_booked_trips" parent="carpooling.menu_root"
-              action="carpooling.show_booked_trips"/>
-    <menuitem name="Your trips" id="carpooling.menu_your_trips" parent="carpooling.menu_root"
-              action="carpooling.show_your_trips"/>
-    <menuitem name="Expired trips" id="carpooling.menu_expired_trips" parent="carpooling.menu_root"/>
+    
+    <menuitem name="Active trips" sequence="1" id="carpooling.menu_active_trips" parent="carpooling.menu_root"/>
 
-    <menuitem name="Your expired trips" id="carpooling.menu_your_expired_trips" parent="carpooling.menu_expired_trips"
+    <menuitem name="Available trips" sequence="1" id="carpooling.menu_available_trips" parent="carpooling.menu_active_trips"
+              action="carpooling.show_available_trips"/>
+    <menuitem name="Booked trips" sequence="2" id="carpooling.menu_booked_trips" parent="carpooling.menu_active_trips"
+              action="carpooling.show_booked_trips"/>
+    <menuitem name="Your trips" sequence="3" id="carpooling.menu_your_trips" parent="carpooling.menu_active_trips"
+              action="carpooling.show_your_trips"/>
+
+
+
+    <menuitem name="Expired trips" sequence="2" id="carpooling.menu_expired_trips" parent="carpooling.menu_root"/>
+
+    <menuitem name="Your expired trips" sequence="3" id="carpooling.menu_your_expired_trips" parent="carpooling.menu_expired_trips"
               action="carpooling.show_your_expired_trips"/>
-    <menuitem name="Booked &amp; expired trips" id="carpooling.menu_booked_expired_trips" parent="carpooling.menu_expired_trips"
+    <menuitem name="Booked &amp; expired trips" sequence="2" id="carpooling.menu_booked_expired_trips" parent="carpooling.menu_expired_trips"
               action="carpooling.show_booked_expired_trips"/>
-    <menuitem name="Others expired trips" id="carpooling.menu_others_expired_trips" parent="carpooling.menu_expired_trips"
+    <menuitem name="Others expired trips" sequence="1" id="carpooling.menu_others_expired_trips" parent="carpooling.menu_expired_trips"
               action="carpooling.show_others_expired_trips"/>             
 
   </data>
