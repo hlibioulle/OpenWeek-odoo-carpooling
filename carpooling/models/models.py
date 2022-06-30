@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from email.policy import default
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
@@ -10,6 +9,9 @@ class VehicleTrip(models.Model):
 
     driver = fields.Many2one("res.users", "Driver", required=True, default=lambda self: self.env.user)
     driver_uid = fields.Integer(compute="_get_driver_uid", store=True)
+
+    # field_lat = fields.Float(string="Latitude")
+    # field_lng = fields.Float(string="Longitude")
 
     @api.depends('driver')
     def _get_driver_uid(self):
@@ -23,11 +25,15 @@ class VehicleTrip(models.Model):
         for record in self:
             record.is_current_user = (record.driver == self.env.user)
 
-    vehicle_type = fields.Char()
+    vehicle_type = fields.Selection(
+        string='Vehicle type',
+        selection=[('small_car', 'Small car'), ('medium_car', 'Medium car'), ('big_car', 'Big car'), ('suv', 'SUV'), ('minivan', 'Minivan'), ('minivan', 'Minivan')],
+        help="Different possible types of vehicle"
+    )
 
-    departure_loc = fields.Char(required=True)
-    destination_loc = fields.Char(required=True)
-    departure_time = fields.Datetime(required=True)
+    departure_loc = fields.Char(string="Departure location", required=True)
+    destination_loc = fields.Char(string="Destination location", required=True)
+    departure_time = fields.Datetime(string="Departure time", required=True)
 
     available_seats = fields.Integer(required=True, string="Available seats")
     remaining_seats = fields.Integer(compute='_remaining_seats', string="Remaining seats")
@@ -42,11 +48,14 @@ class VehicleTrip(models.Model):
             if len(record.passengers) > record.available_seats:
                 raise ValidationError(f"Too many passengers ({len(record.passengers)} > {record.available_seats})")
 
-    def do_something(self):
+    def book_or_cancel(self):
         for record in self:
-            if record.remaining_seats <= 0:
-                continue
-            record.write({'passengers': [fields.Command.link(self.env.uid)] })  
+            if self.env.user in record.passengers:
+                record.write({'passengers': [fields.Command.unlink(self.env.uid)] })  
+            else:
+                if record.remaining_seats <= 0:
+                    continue
+                record.write({'passengers': [fields.Command.link(self.env.uid)] })  
         return True
     
     # @api.onchange('passengers')

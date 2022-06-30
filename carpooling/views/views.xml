@@ -6,16 +6,16 @@
       <field name="name">carpooling available trips</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <tree create="false">
+        <tree create="false" export_xlsx="false">
           <field name="driver"/>
-          <field name="is_current_user"/>
+          <!-- <field name="is_current_user"/> -->
           <field name="vehicle_type"/>
           <field name="departure_time"/>
           <field name="departure_loc"/>
           <field name="destination_loc"/>
           <field name="remaining_seats"/>
           <field name="description"/>
-          <button name="do_something" type="object" string="Book trip" class="oe_highlight"/>
+          <button name="book_or_cancel" type="object" string="Book trip" class="oe_highlight"/>
         </tree>
       </field>
     </record>
@@ -31,7 +31,7 @@
       <field name="name">carpooling form</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <form string="Trip info" edit="false" delete="false" duplicate="false">
+        <form string="Trip info" create="false" edit="false" delete="false" duplicate="false">
           <group colspan="4">
               <group colspan="2" col="2">
                   <separator string="Required fields" colspan="2"/>
@@ -46,13 +46,18 @@
                   <field name="description"/>
 
                   <notebook colspan="4">
-                    <page string="Vehicle pictures">
+                    <page string="Map">
                         <field name="description"/>
                     </page>
                     <page string="Location pictures">
                         <field name="description"/>
                     </page>
-                    <page string="Map">
+                    <page string="Passengers">
+                        <tree create="false" edit="false" delete="false">
+                          <field name="passengers" readonly="1"/>
+                        </tree>
+                    </page>
+                    <page string="Vehicle pictures">
                         <field name="description"/>
                     </page>
                   </notebook>
@@ -81,10 +86,10 @@
       <field name="name">carpooling your trips</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <tree>
+        <tree export_xlsx="false">
           <field name="driver" readonly="1"/>
-          <field name="driver_uid"/>
-          <field name="is_current_user"/>
+          <!-- <field name="driver_uid"/>
+          <field name="is_current_user"/> -->
           <field name="vehicle_type"/>
           <field name="departure_time"/>
           <field name="departure_loc"/>
@@ -114,12 +119,13 @@
           <group colspan="4">
               <group colspan="2" col="2">
                   <separator string="Required fields" colspan="2"/>
-                  <field name="driver" readonly="1"/>
+                  <field name="driver"/>
+                   <!-- readonly="1"/> -->
                   <field name="departure_time" required="1"/>
                   <field name="departure_loc" required="1"/>
                   <field name="destination_loc" required="1"/>
                   <field name="available_seats" required="1"/>
-              
+
                   <separator string="Optional" colspan="2"/>
                   <field name="vehicle_type"/>
                   <field name="description"/>
@@ -201,13 +207,13 @@
 
     <!-- menu categories -->
 
-    <menuitem name="Trips" id="carpooling.menu_1" parent="carpooling.menu_root"/>
+    <!-- <menuitem name="Trips" id="carpooling.menu_1" parent="carpooling.menu_root"/> -->
 
     <!-- actions -->
 
-    <menuitem name="Available trips" id="carpooling.menu_1_available_trips" parent="carpooling.menu_1"
+    <menuitem name="Available trips" id="carpooling.menu_1_available_trips" parent="carpooling.menu_root"
               action="carpooling.show_available_trips"/>
-    <menuitem name="Your trips" id="carpooling.menu_1_your_trips" parent="carpooling.menu_1"
+    <menuitem name="Your trips" id="carpooling.menu_1_your_trips" parent="carpooling.menu_root"
               action="carpooling.show_your_trips"/>
 
   </data>
