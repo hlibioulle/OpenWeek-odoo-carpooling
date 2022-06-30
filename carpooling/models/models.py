@@ -9,6 +9,13 @@ class VehicleTrip(models.Model):
     _description = "carpooling.vehicle_trip.description"
 
     driver = fields.Many2one("res.users", "Driver", required=True, default=lambda self: self.env.user)
+    driver_uid = fields.Integer(compute="_get_driver_uid", store=True)
+
+    @api.depends('driver')
+    def _get_driver_uid(self):
+        for record in self:
+            record.driver_uid = record.driver.id
+
     is_current_user = fields.Boolean(compute="_is_current_user_driver")
 
     @api.depends('driver')

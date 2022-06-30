@@ -27,11 +27,11 @@
       <field name="act_window_id" ref="action_id"/> 
     </record> -->
 
-    <!-- <record model="ir.ui.view" id="carpooling.available_trips_form">
+    <record model="ir.ui.view" id="carpooling.available_trip_form">
       <field name="name">carpooling form</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <form string="Trip info" edit="false">
+        <form string="Trip info" edit="false" delete="false" duplicate="false">
           <group colspan="4">
               <group colspan="2" col="2">
                   <separator string="Required fields" colspan="2"/>
@@ -60,7 +60,7 @@
           </group>
         </form>
       </field>
-    </record> -->
+    </record>
 
     <record model="ir.ui.view" id="carpooling.trip_search">
       <field name="name">carpooling trip search</field>
@@ -83,6 +83,7 @@
       <field name="arch" type="xml">
         <tree>
           <field name="driver" readonly="1"/>
+          <field name="driver_uid"/>
           <field name="is_current_user"/>
           <field name="vehicle_type"/>
           <field name="departure_time"/>
@@ -105,7 +106,7 @@
         ]</field>
     </record> -->
 
-    <record model="ir.ui.view" id="carpooling.your_trips_form">
+    <record model="ir.ui.view" id="carpooling.your_trip_form">
       <field name="name">carpooling form</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
@@ -150,17 +151,49 @@
     <record model="ir.actions.act_window" id="carpooling.show_available_trips">
       <field name="name">Available trips</field>
       <field name="res_model">carpooling.vehicle_trip</field>
-      <field name="view_id" ref="carpooling.available_trips"/>
-      <field name="view_mode">tree,form</field>
+      <!-- <field name="view_id" ref="carpooling.available_trips"/> -->
+      <!-- <field name="views">[("carpooling.available_trips", "tree"), ("carpooling.available_trip_form", "form")]</field> -->
+      <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('carpooling.available_trips')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('carpooling.available_trip_form')})]"
+      />
+      <!-- <field name="view_mode">tree,form</field> -->
+      <field name="domain">[('driver_uid', '!=', uid)]</field>
     </record>
 
     <record model="ir.actions.act_window" id="carpooling.show_your_trips">
       <field name="name">Your trips</field>
       <field name="res_model">carpooling.vehicle_trip</field>
-      <field name="view_id" ref="carpooling.your_trips"/>
-      <field name="view_mode">tree,form</field>
-      <field name="domain">[('is_current_user', '=', 1)]</field>
+      <!-- <field name="view_id" ref="carpooling.your_trips"/> -->
+      <!-- <field name="views">[("carpooling.your_trips", "tree"), ("carpooling.your_trip_form", "form")]</field> -->
+      <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('carpooling.your_trips')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('carpooling.your_trip_form')})]"
+      />
+      <!-- <field name="view_mode">tree,form</field> -->
+      <field name="domain">[('driver_uid', '=', uid)]</field>
     </record>
+
+    <!-- <record id="zehjbvizcvbzevboz" model="ir.rule">
+      <field name="name">Show</field>
+      <field name="model_id" ref="model_carpooling_vehicle_trip" />
+      <field name="perm_read" eval="0" />
+      <field name="perm_write" eval="0" />
+      <field name="perm_create" eval="0" />
+      <field name="perm_unlink" eval="0" />
+      <field name="domain_force">[('driver', '=', user)]</field>
+    </record> -->
+
+    <!-- <record id="hide" model="ir.rule">
+      <field name="name">Hide</field>
+      <field name="model_id" ref="model_carpooling_vehicle_trip" />
+      <field name="groups" eval="[(4, ref('base.group_user'))]" />
+      <field name="perm_read" eval="0" />
+      <field name="perm_write" eval="0" />
+      <field name="perm_create" eval="0" />
+      <field name="perm_unlink" eval="0" />
+      <field name="domain_force">[('driver', '!=', user)]</field>
+    </record> -->
 
     <!-- Top menu item -->
 
