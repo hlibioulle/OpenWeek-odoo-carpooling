@@ -6,9 +6,9 @@
       <field name="name">carpooling available trips</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <tree create="false" export_xlsx="false" delete="false" default_order='departure_time' decoration-warning="(expired == True)" decoration-muted="(expired == False) and (remaining_seats_int &lt;= 0)" decoration-success="(expired == False) and (remaining_seats_int &gt; 0)">
-          <field name="driver"/>
+        <tree create="false" export_xlsx="false" delete="false" default_order='departure_time' decoration-danger="(expired == True)" decoration-muted="(expired == False) and (remaining_seats_int &lt;= 0)" decoration-success="(expired == False) and (remaining_seats_int &gt; 0)">
           <!-- <field name="is_current_user"/> -->
+          <field name="driver" readonly="1"/>
           <field name="vehicle_type"/>
           <field name="departure_time"/>
           <field name="expired" invisible="1"/>
@@ -96,7 +96,7 @@
       <field name="name">carpooling your trips</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <tree export_xlsx="false" default_order='departure_time' decoration-warning="(expired == True)" decoration-muted="(expired == False) and (remaining_seats_int &lt;= 0)" decoration-success="(expired == False) and (remaining_seats_int &gt; 0)">
+        <tree export_xlsx="false" default_order='departure_time' decoration-danger="(expired == True)" decoration-muted="(expired == False) and (remaining_seats_int &lt;= 0)" decoration-success="(expired == False) and (remaining_seats_int &gt; 0)">
           <field name="driver" readonly="1"/>
           <!-- <field name="driver_uid"/>
           <field name="is_current_user"/> -->
@@ -133,6 +133,7 @@
                   <separator string="Required fields" colspan="2"/>
                   <field name="driver" readonly="1"/>
                   <field name="departure_time" required="1"/>
+                  <field name="expired" invisible="1"/>
                   <field name="departure_loc" required="1"/>
                   <field name="destination_loc" required="1"/>
                   <field name="available_seats" required="1"/>
