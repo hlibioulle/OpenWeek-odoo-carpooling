@@ -6,25 +6,22 @@ from odoo.exceptions import ValidationError
 
 class VehicleTrip(models.Model):
     _name = "carpooling.vehicle_trip"
-    _description = "carpooling.vehicle_trip.description"
+    _description = "This model represents a trip that is going from somewhere to somewhere at a given date and time with the corresponding driver and passengers"
 
     driver = fields.Many2one("res.users", "Driver", required=True, default=lambda self: self.env.user)
     driver_uid = fields.Integer(compute="_get_driver_uid", store=True)
-
-    # field_lat = fields.Float(string="Latitude")
-    # field_lng = fields.Float(string="Longitude")
 
     @api.depends('driver')
     def _get_driver_uid(self):
         for record in self:
             record.driver_uid = record.driver.id
 
-    is_current_user = fields.Boolean(compute="_is_current_user_driver")
+    is_current_user_driver = fields.Boolean(compute="_is_current_user_driver")
 
     @api.depends('driver')
     def _is_current_user_driver(self):
         for record in self:
-            record.is_current_user = (record.driver == self.env.user)
+            record.is_current_user_driver = (record.driver == self.env.user)
 
     vehicle_type = fields.Selection(
         string='Vehicle type',
@@ -36,11 +33,13 @@ class VehicleTrip(models.Model):
     destination_loc = fields.Char(string="Destination location", required=True)
     departure_time = fields.Datetime(string="Departure time", required=True)
     expired = fields.Boolean(compute="_compute_expired", store=True)
+
     @api.depends("departure_time")
     def _compute_expired(self):
         for record in self:
-            now = datetime.now()
-            record.expired = record.departure_time < now
+            if isinstance(record.departure_time, datetime):
+                now = datetime.now()
+                record.expired = (record.departure_time < now)
                 
 
     available_seats = fields.Integer(required=True, string="Available seats")
@@ -57,16 +56,6 @@ class VehicleTrip(models.Model):
             if len(record.passengers) > record.available_seats:
                 raise ValidationError(f"Too many passengers ({len(record.passengers)} > {record.remaining_seats_int})")
 
-    # button_txt = fields.Char(compute="_compute_btn_txt")
-
-    # @api.depends("passengers")
-    # def _compute_btn_txt(self):
-    #     for record in self:
-    #         if self.env.user in record.passengers:
-    #             record.button_txt = "Cancel booking"
-    #         else:
-    #             record.button_txt = "Book trip"
-
     current_user_is_passenger = fields.Boolean(compute="_compute_current_user_is_passenger")
     @api.depends("passengers")
     def _compute_current_user_is_passenger(self):
@@ -82,15 +71,6 @@ class VehicleTrip(models.Model):
                     continue
                 record.write({'passengers': [fields.Command.link(self.env.uid)] })  
         return True
-    
-    # @api.onchange('passengers')
-    # def _on_passengers_change(self):
-    #     return {
-    #         'warning': {
-    #             'title': "You should NOT do that",
-    #             'message': "The passengers list is NOT editable",
-    #         }
-    #     }
 
     @api.depends("available_seats", "passengers")
     def _remaining_seats(self):
@@ -101,11 +81,3 @@ class VehicleTrip(models.Model):
     def _remaining_seats_int(self):
         for record in self:
             record.remaining_seats_int = record.available_seats - len(record.passengers)
-
-class Passenger(models.Model):
-    _name = "res.users"
-    #_description = "carpooling.passenger.description"
-    _inherit = "res.users"
-
-    #is_driver = fields.Boolean(string="Is a driver?")
-    booked_trips = fields.Many2many(comodel_name="carpooling.vehicle_trip", string="Booked trips")

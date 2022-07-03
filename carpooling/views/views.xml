@@ -7,8 +7,8 @@
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
         <tree create="false" export_xlsx="false" delete="false" default_order='departure_time' decoration-danger="(expired == True)" decoration-muted="(expired == False) and (remaining_seats_int &lt;= 0)" decoration-success="(expired == False) and (remaining_seats_int &gt; 0)">
-          <!-- <field name="is_current_user"/> -->
           <field name="driver" readonly="1"/>
+
           <field name="vehicle_type"/>
           <field name="departure_time"/>
           <field name="expired" invisible="1"/>
@@ -17,9 +17,7 @@
           <field name="remaining_seats"/>
           <field name="remaining_seats_int" invisible="1"/>
           <field name="description"/>
-          <!-- <button name="book_or_cancel" type="object" class="oe_highlight">
-            <field readonly="1" name="button_txt" options='{"no_open": True}'/>
-          </button> -->
+
           <field name="current_user_is_passenger" invisible="1"/>
           <button name='book_or_cancel' string='Book trip' type="object"  attrs="{'invisible':['|', '|', ('current_user_is_passenger', '=', True), ('remaining_seats_int', '&lt;=', 0), ('expired', '=', True)]}" class="oe_highlight"/>
           <button name='book_or_cancel' string='Cancel booking' type="object"  attrs="{'invisible':['|', ('current_user_is_passenger', '=', False), ('expired', '=', True)]}" class="btn-danger"/>
@@ -27,18 +25,11 @@
       </field>
     </record>
 
-    <!-- <record id="tree_id" model="ir.actions.act_window.view"> 
-      <field eval="3" name="sequence"/> 
-      <field name="view_mode">tree</field> 
-      <field name="view_id" ref="tree_view_id"/> 
-      <field name="act_window_id" ref="action_id"/> 
-    </record> -->
-
     <record model="ir.ui.view" id="carpooling.available_trip_form">
       <field name="name">carpooling form</field>
       <field name="model">carpooling.vehicle_trip</field>
       <field name="arch" type="xml">
-        <form string="Trip info" create="false" edit="false" delete="false" duplicate="false">
+        <form string="Trip info" edit="false" delete="false" duplicate="false">
           <group colspan="4">
               <group colspan="2" col="2">
                   <separator string="Required fields" colspan="2"/>
@@ -84,8 +75,6 @@
           <field name="destination_loc"/>
           <field name="remaining_seats"/>
           <field name="passengers"/>
-          <!-- <field name="current_user_is_passenger"/> -->
-          <!-- <field name="current_user_is_passenger" string="Is current user a passenger?" filter_domain="[(current_user_is_passenger,'=', True)]"/> -->
         </search>
       </field>
     </record>
@@ -98,8 +87,6 @@
       <field name="arch" type="xml">
         <tree export_xlsx="false" default_order='departure_time' decoration-danger="(expired == True)" decoration-muted="(expired == False) and (remaining_seats_int &lt;= 0)" decoration-success="(expired == False) and (remaining_seats_int &gt; 0)">
           <field name="driver" readonly="1"/>
-          <!-- <field name="driver_uid"/>
-          <field name="is_current_user"/> -->
           <field name="vehicle_type"/>
           <field name="departure_time"/>
           <field name="expired" invisible="1"/>
@@ -111,17 +98,6 @@
         </tree>
       </field>
     </record>
-
-    <!-- <record id="show_current_user_as_driver" model="ir.rule">
-        <field name="name">Show only trips where the current user is the driver</field>
-        <field name="model_id" ref="carpooling.vehicle_trip"/>
-        <field name="perm_read" eval="False"/>
-        <field name="groups" eval="[Command.link(ref('base.group_user'))]"/>
-        <field name="domain_force">[
-            '|', ('driver', '!=', user.id),
-                ('user_id', '=', False)
-        ]</field>
-    </record> -->
 
     <record model="ir.ui.view" id="carpooling.your_trip_form">
       <field name="name">carpooling form</field>

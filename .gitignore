@@ -1,6 +1,10 @@
 
 *.pyc
 
-open_academy/.pylintrc
+open_academy/
 
 carpooling/.vscode/
+
+carpooling/__pycache__/
+
+carpooling/models/__pycache__/

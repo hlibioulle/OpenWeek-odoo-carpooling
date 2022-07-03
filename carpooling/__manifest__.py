@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "carpooling",
+    'name': "Carpooling",
 
     'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+        This carpooling module allows the users to create car trips as well as booking others' trips to go somewhere together by sharing a vehivle.
+        """,
 
     'description': """
-        Long description of module's purpose
+        This module has been developed during the OpenWeek 2022 organised by the EPL (UCLouvain).
+        It was developed in parternship with Odoo with the objective to propose a carpooling module to replace the existing solution (Excel sheets).
+        This module allows the user to create car trips (in which he will be the driver) as well as book an existing trip (in which he will be a passenger).
+        A trip corresponds to going from some place to another at a given date and time. Thus drivers and passengers can share a vehicle and optimise their trips.
     """,
 
     'author': "My Company",
@@ -26,10 +29,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
-        'views/templates.xml',
     ],
     # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
+    'demo': [],
 }
